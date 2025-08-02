@@ -48,7 +48,7 @@ contract BattleGame is ERC721URIStorage, Ownable {
 
     event ProfileCreated(address indexed, string);
     event LevelUp(address indexed, uint256, uint256);
-    event NFTMinted(address indexed, uint256, uint256);
+    event NFTMinted(address indexed, uint256, uint256, string);
     event CrateAwarded(address indexed, string, uint256, uint256);
     event CrateClaimed(address indexed, uint256, string);
     event LeagueChanged(address indexed, uint256, string);
@@ -61,7 +61,7 @@ contract BattleGame is ERC721URIStorage, Ownable {
     constructor() ERC721("BattleGameHeroNFT", "BGHNFT") Ownable(msg.sender) {}
 
     // ---- PROFILE CREATION ----
-    function createProfile(string calldata _name) external {
+    function createProfile(string calldata _name, string calldata tokenUri) external {
         require(!userProfiles[msg.sender].exists, "Already has a profile");
         userProfiles[msg.sender] = UserProfile({
             name: _name,
@@ -74,8 +74,8 @@ contract BattleGame is ERC721URIStorage, Ownable {
             battleMultiplier: 10,
             exists: true
         });
-        // Only here: auto-mint first NFT
-        mintNFT(1);
+        // Initial NFT must have metadata URI
+        mintNFT(1, tokenUri);
         emit ProfileCreated(msg.sender, _name);
     }
 
@@ -83,7 +83,6 @@ contract BattleGame is ERC721URIStorage, Ownable {
     function recordBattleResult(bool isWin) external hasProfile {
         UserProfile storage user = userProfiles[msg.sender];
 
-        // Battle and EXP
         uint256 baseExp = 5 + (user.league * 2);
         if (isWin) {
             user.battlesWon += 1;
@@ -99,7 +98,6 @@ contract BattleGame is ERC721URIStorage, Ownable {
         }
         user.exp += baseExp;
 
-        // Level up
         uint256 expForNext = 10 + (user.level * 5);
         uint256 newLevel = user.level;
         while (user.exp >= expForNext && newLevel < 100) {
@@ -117,11 +115,9 @@ contract BattleGame is ERC721URIStorage, Ownable {
 
     function _checkAndUpdateLeague(UserProfile storage user, address userAddr) internal {
         uint256 newLeague = user.league;
-        // Upgrade
         while (newLeague < leagueTrophyThresholds.length-1 && user.trophies >= leagueTrophyThresholds[newLeague+1]) {
             newLeague++;
         }
-        // Downgrade
         while (newLeague > 1 && user.trophies < leagueTrophyThresholds[newLeague]) {
             newLeague--;
         }
@@ -141,28 +137,28 @@ contract BattleGame is ERC721URIStorage, Ownable {
         emit LevelUp(userAddr, newLevel, user.battleMultiplier);
     }
 
-    // ---- CLAIM CRATE: "claim" a crate, but must mint NFT separately ----
+    // ---- CLAIM CRATE: claim a crate, but must mint NFT separately with metadata uri ----
     function claimCrate(uint256 crateIndex) external hasProfile {
         require(crateIndex < userCrates[msg.sender].length, "Bad crate index");
         Crate storage crate = userCrates[msg.sender][crateIndex];
         require(!crate.claimed, "Already claimed");
         crate.claimed = true;
         emit CrateClaimed(msg.sender, crateIndex, crate.crateType);
-        // NO NFT minted here; must call mintNFT explicitly
     }
 
-    // ---- MINT NFT: PUBLIC, USER-INITIATED (e.g., from frontend button) ----
-    function mintNFT(uint256 atLevel) public hasProfile {
+    // ---- MINT NFT: PUBLIC, USER-INITIATED, REQUIRES METADATA URI ----
+    function mintNFT(uint256 atLevel, string calldata tokenUri) public hasProfile {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
         _safeMint(msg.sender, newTokenId);
+        _setTokenURI(newTokenId, tokenUri); // Link to Pinata/IPFS metadata
 
         NFTStats memory stats = _getNFTStatsForLevel(atLevel);
         nftStats[newTokenId] = stats;
         userProfiles[msg.sender].nftsOwned++;
         userOwnedNFTs[msg.sender].push(newTokenId);
 
-        emit NFTMinted(msg.sender, newTokenId, atLevel);
+        emit NFTMinted(msg.sender, newTokenId, atLevel, tokenUri);
     }
 
     function _getNFTStatsForLevel(uint256 level) internal pure returns (NFTStats memory) {

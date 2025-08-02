@@ -291,6 +291,11 @@
 				"internalType": "string",
 				"name": "_name",
 				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "tokenUri",
+				"type": "string"
 			}
 		],
 		"name": "createProfile",
@@ -367,6 +372,11 @@
 				"internalType": "uint256",
 				"name": "atLevel",
 				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "tokenUri",
+				"type": "string"
 			}
 		],
 		"name": "mintNFT",
@@ -394,6 +404,12 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
 		"name": "NFTMinted",
