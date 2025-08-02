@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
             
             {/* The footer is a direct child of the flex container, so it gets pushed down */}
             <footer className="text-center py-6 border-t border-border text-sm text-muted-foreground">
-              RepuFi © {new Date().getFullYear()} - Built on PassetHub
+               Influx © {new Date().getFullYear()} - Built on Monad
             </footer>
           </div>
         </Providers>
