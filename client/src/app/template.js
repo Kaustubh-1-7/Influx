@@ -26,7 +26,7 @@ const Loader = () => (
     className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
   >
     <h1 className="text-4xl sm:text-6xl font-bold text-white tracking-widest uppercase">
-      <ScrambleText finalText="REPUFI" />
+      <ScrambleText finalText="Influx" />
     </h1>
   </motion.div>
 );

@@ -2619,7 +2619,7 @@ export const monadTestnet = defineChain({
   id: 10143, // Replace with correct Monad testnet chain ID
   name: 'Monad Testnet',
   nativeCurrency: {
-    name: 'Monad Testnet',
+    name: 'Monad',
     symbol: 'MON',
     decimals: 18,
   },
@@ -2629,7 +2629,7 @@ export const monadTestnet = defineChain({
     },
   },
   blockExplorers: {
-    default: { name: 'MonadScan', url: 'https://monad-testnet.socialscan.io' },
+    default: { name: 'MonadScan', url: 'testnet.monadexlorer.com' },
   },
   testnet: true,
 });
