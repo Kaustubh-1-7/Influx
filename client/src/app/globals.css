@@ -1,26 +1,276 @@
-@import "tailwindcss";
+/* Import Tailwind's layers explicitly */
+@import "tailwindcss"; /* Or the individual layer imports */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer theme, base, components, utilities;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+/* @import "tailwindcss/components.css" layer(components); */ /* Optional */
+@import "tailwindcss/utilities.css" layer(utilities);
 
-@media (prefers-color-scheme: dark) {
+/* Your Custom Base Layer Styles (CSS Variables & Global Styles) */
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* HSL values for CSS variables - these are fine */
+    --background-hsl: 0 0% 100%; /* Renamed to avoid conflict with Tailwind's potential 'background' keyword */
+    --foreground-hsl: 222.2 84% 4.9%;
+    --card-hsl: 0 0% 100%;
+    --card-foreground-hsl: 222.2 84% 4.9%;
+    --popover-hsl: 0 0% 100%;
+    --popover-foreground-hsl: 222.2 84% 4.9%;
+    --primary-hsl: 221.2 83.2% 53.3%;
+    --primary-foreground-hsl: 210 40% 98%;
+    --secondary-hsl: 210 40% 96.1%;
+    --secondary-foreground-hsl: 222.2 47.4% 11.2%;
+    --muted-hsl: 210 40% 96.1%;
+    --muted-foreground-hsl: 215.4 16.3% 46.9%;
+    --accent-hsl: 210 40% 96.1%;
+    --accent-foreground-hsl: 222.2 47.4% 11.2%;
+    --destructive-hsl: 0 84.2% 60.2%;
+    --destructive-foreground-hsl: 210 40% 98%;
+    --border-hsl: 214.3 31.8% 91.4%;
+    --input-border-hsl: 214.3 31.8% 91.4%; /* Specific for input border */
+    --ring-hsl: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+     --primary-glow-hsl: 221.2 83.2% 53.3%; /* Same as primary */
+    --secondary-glow-hsl: 210 40% 96.1%;   /* A light blue/gray for the other end of the gradient */
+    --dark-card-hsl: 0 0% 100%; 
+  }
+
+  .dark {
+    --background-hsl: 222.2 84% 4.9%;
+    --foreground-hsl: 210 40% 98%;
+    --card-hsl: 222.2 84% 4.9%;
+    --card-foreground-hsl: 210 40% 98%;
+    /* ... other dark mode vars, consistently named with -hsl suffix if they are HSL components ... */
+    --primary-hsl: 217.2 91.2% 59.8%;
+    --primary-foreground-hsl: 222.2 47.4% 11.2%;
+    --border-hsl: 217.2 32.6% 17.5%;
+    --input-border-hsl: 217.2 32.6% 17.5%;
+    --ring-hsl: 224.3 76.5% 48%;
+     --primary-glow-hsl: 217.2 91.2% 59.8%;   /* Use the brighter dark-mode primary */
+    --secondary-glow-hsl: 215 80% 55%;        /* A nice contrasting blue for the gradient */
+    --dark-card-hsl: 224 71% 4%;
+  }
+
+  body {
+    /* Apply CSS variables directly using standard CSS syntax */
+    background-color: hsl(var(--background-hsl));
+    color: hsl(var(--foreground-hsl));
+    font-family: var(--font-inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,h2,h3,h4,h5,h6 {
+    font-weight: 600; /* Tailwind's default font-semibold */
+    color: hsl(var(--foreground-hsl));
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Your Custom Component Styles - Apply standard CSS or only default Tailwind utilities */
+@layer components {
+  .card {
+    background-color: hsl(var(--card-hsl));
+    color: hsl(var(--card-foreground-hsl));
+    border-radius: var(--radius); /* Use CSS var directly for radius */
+    border-width: 1px; /* Tailwind's `border` utility */
+    border-color: hsl(var(--border-hsl)); /* Use CSS var directly */
+    @apply shadow-sm transition-shadow duration-300; /* shadow-sm is a default utility */
+  }
+
+  .btn {
+    /* These are mostly default Tailwind utilities which are fine */
+    @apply inline-flex items-center justify-center text-sm font-medium
+           transition-colors
+           focus-visible:outline-none
+           disabled:pointer-events-none disabled:opacity-60
+           h-10 px-4 py-2;
+    border-radius: var(--radius); /* Apply radius directly */
+    /* For focus ring, apply directly or create a utility if Tailwind's default ring doesn't use your var */
+    /* Example for focus ring, though Tailwind's focus-visible utilities are preferred */
+    /* &:focus-visible { outline: 2px solid hsl(var(--ring-hsl)); outline-offset: 2px; } */
+    /* Better: Use Tailwind's ring utilities if their colors are acceptable or if you configure them.
+       Since we are NOT using tailwind.config.js to map --ring, we have to style focus rings manually or use default ring colors.
+       Tailwind's default focus ring usually uses a blue. If you want your --ring-hsl, you'd do it manually:
+    */
+  }
+  .btn:focus-visible { /* Manual focus ring style */
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 2px hsl(var(--background-hsl)), 0 0 0 4px hsl(var(--ring-hsl)); /* Example focus ring */
+  }
+
+
+  .btn-primary {
+    background-color: hsl(var(--primary-hsl));
+    color: hsl(var(--primary-foreground-hsl));
+    /* For hover, you need to define hover colors as new CSS vars or use slightly darker fixed values */
+  }
+  .btn-primary:hover {
+    /* background-color: hsl(var(--primary-hover-hsl)); /* If you define a --primary-hover-hsl */
+    filter: brightness(90%); /* Or a simple CSS filter */
+  }
+
+  .btn-secondary {
+    background-color: hsl(var(--secondary-hsl));
+    color: hsl(var(--secondary-foreground-hsl));
+  }
+  .btn-secondary:hover { filter: brightness(90%); }
+
+  .btn-outline {
+    border-width: 1px;
+    border-color: hsl(var(--input-border-hsl)); /* Use --input-border-hsl or --border-hsl */
+    background-color: transparent;
+    color: hsl(var(--primary-hsl)); /* Or foreground, depending on design */
+  }
+  .btn-outline:hover {
+    background-color: hsl(var(--accent-hsl));
+    color: hsl(var(--accent-foreground-hsl));
+  }
+
+  .btn-danger {
+    background-color: hsl(var(--destructive-hsl));
+    color: hsl(var(--destructive-foreground-hsl));
+  }
+  .btn-danger:hover { filter: brightness(90%); }
+
+  .btn-warning {
+    background-color: #f59e0b; /* Tailwind's amber-500 */
+    color: white;
+  }
+  .btn-warning:hover { background-color: #d97706; } /* Tailwind's amber-600 */
+
+
+  .input, .textarea {
+    @apply flex w-full text-sm 
+           file:border-0 file:bg-transparent file:text-sm file:font-medium 
+           disabled:cursor-not-allowed disabled:opacity-50
+           transition-colors duration-150 ease-in-out;
+    background-color: hsl(var(--background-hsl)); /* Assuming inputs have same bg as body */
+    color: hsl(var(--foreground-hsl));
+    border-width: 1px;
+    border-color: hsl(var(--input-border-hsl));
+    border-radius: var(--radius); /* Use CSS var directly for radius */
+    padding: 0.5rem 0.75rem; /* Equivalent to py-2 px-3 for h-10 */
+    height: 2.5rem; /* Equivalent to h-10 */
+  }
+  .input::placeholder, .textarea::placeholder {
+    color: hsl(var(--muted-foreground-hsl));
+  }
+  .input:focus-visible, .textarea:focus-visible { /* Manual focus styling */
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-color: hsl(var(--ring-hsl)); /* Change border color on focus */
+    box-shadow: 0 0 0 2px hsl(var(--ring-hsl)); /* Add a ring effect */
+  }
+
+  .textarea {
+    min-height: 80px; /* Default from your previous .textarea */
+    padding-top: 0.5rem; /* Adjust padding for textarea if needed */
+    padding-bottom: 0.5rem;
+  }
+
+  /* Animation */
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+
+  .text-gradient {
+    /* The gradient uses your primary color variable */
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary-hsl)),
+      hsl(var(--foreground-hsl)),
+      hsl(var(--primary-hsl))
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    animation: gradient-text-flow 5s ease infinite;
+    background-size: 200% 200%;
+  }
+
+  .card-gradient-border {
+    position: relative;
+    /* Uses the --dark-card-hsl variable we defined earlier */
+    background-color: hsl(var(--dark-card-hsl) / 0.6); /* Add some transparency */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px); /* Frosted glass effect */
+    border-radius: 1rem; /* A bit more rounded for a modern look (2xl) */
+  }
+
+  .card-gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px; /* Controls the 'thickness' of the border */
+    border-radius: inherit; /* Matches the parent's border-radius */
+    /* Creates the gradient using our new glow variables */
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary-glow-hsl) / 0.5), /* Use HSL with alpha for glow */
+      hsl(var(--secondary-glow-hsl) / 0.5)
+    );
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+  }
+  .card-gradient-border:hover::before {
+    opacity: 1;
+  }
+
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 8px 2px currentColor;
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 12px 3px currentColor;
+  }
+}
+
+@layer utilities {
+  /* ... your existing utilities if any ... */
+  
+  /* Pulsing Glow for Status Indicators */
+  .animate-pulse-glow {
+    animation: pulse-glow 2.5s infinite ease-in-out;
+  }
+
+  /* You can add custom scrollbar styles here too if you like */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--dark-card-hsl));
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border-hsl));
+    border-radius: 10px;
+    border: 2px solid hsl(var(--dark-card-hsl));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--primary-hsl));
+  }
+  @keyframes aurora {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  .animate-aurora {
+    animation: aurora 30s linear infinite;
+  }
+}
+
